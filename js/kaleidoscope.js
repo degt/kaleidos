@@ -64,33 +64,14 @@ $( document ).ready( function () {
   var mode = ~~parameters.mode || 2;
 
   // Project changes in cursor (x, y) onto the image background position.
-  $kaleidescope.mousemove( function ( e ) {
+  $kaleidescope.on('mousemove touchmove', function ( e ) {
+
+    //console.log(e);
+
     x++;
     y++;
 
-    var nx = e.pageX, ny = e.pageY;
-    switch ( mode ) {
-      case 1:
-        nx = -x;
-        ny = e.pageY;
-        break;
-      case 2:
-        nx = e.pageX;
-        ny = -y;
-        break;
-      case 3:
-        nx = x;
-        ny = e.pageY;
-        break;
-      case 4:
-        nx = e.pageX;
-        ny = y;
-        break;
-      case 5:
-        nx = x;
-        ny = y;
-        break;
-    }
+    var nx = pointerEventToXY(e).x, ny = pointerEventToXY(e).y;
 
     move( nx, ny );
     auto = auto_throttle = false;
@@ -171,3 +152,16 @@ $( document ).ready( function () {
       }, 5000 );
   })();
 });
+
+ var pointerEventToXY = function(e){
+      var out = {x:0, y:0};
+      if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
+        var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+        out.x = touch.pageX;
+        out.y = touch.pageY;
+      } else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
+        out.x = e.pageX;
+        out.y = e.pageY;
+      }
+      return out;
+    };
